@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -8,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("General")]
     public float gravity = -9.81f;
+    private Vector3 velocity;
 
     [Header("References")]
     public Camera playerCamera;
@@ -18,91 +20,81 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")]
     public float jumpForce = 8f;
+    public bool doubleJumpEnabled = false;
+    private bool canDoubleJump = true;
     bool readyToJump;
     public float jumpCooldown;
-
 
     [Header("Rotation")]
     public float rotationSensitivity = 2.0f;
 
     private Vector3 moveDirection = Vector3.zero;
-    
     private Vector3 moveInput = Vector3.zero;
 
     private CharacterController characterController;
 
     private float verticalVelocity = 0;
 
-    [Header("Rotation")]
+    [Header("Coyote Time")]
     public float coyoteTime = 0.2f;
-    [SerializeField] private float internalCounterCoyoteTime;
+    public float internalCounterCoyoteTime;
 
+    private CinemachineFreeLook freeLookCam;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        freeLookCam = FindObjectOfType<CinemachineFreeLook>();
         readyToJump = true;
     }
 
     private void Update()
     {
         HandleMovement();
-        HandleRotation();
     }
 
     private void HandleMovement()
     {
-        float speed = Input.GetButton("Sprint") ? runSpeed : walkSpeed;
-
-        // Si está en el suelo, resetea el temporizador coyote
         if (characterController.isGrounded)
         {
+            canDoubleJump = true;
+            velocity.y = -1.86f;
             internalCounterCoyoteTime = coyoteTime;
         }
         else
         {
-            // Si está en el aire, decrementa el temporizador coyote
             internalCounterCoyoteTime -= Time.deltaTime;
+            velocity.y += gravity * Time.deltaTime;
         }
 
-        // Control de salto
-        if (characterController.isGrounded || (internalCounterCoyoteTime > 0))
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
+
+        float speed = Input.GetButton("Sprint") ? runSpeed : walkSpeed;
+
+        if (direction.magnitude >= 0.1f)
         {
-            if (Input.GetKey(KeyCode.Space))
-            {
-                readyToJump = false;
-                verticalVelocity = jumpForce;
-                Invoke(nameof(ResetJump), jumpCooldown);
-            }
-            else if (characterController.isGrounded)
-            {
-                verticalVelocity = -0.5f;
-            }
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.transform.eulerAngles.y;
+            transform.rotation = Quaternion.Euler(0, targetAngle, 0);
+
+            Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+            characterController.Move(moveDir.normalized * speed * Time.deltaTime);
         }
-        else
+
+        if (Input.GetButtonDown("Jump") && (characterController.isGrounded || (internalCounterCoyoteTime > 0 && readyToJump)))
         {
-            verticalVelocity += gravity * Time.deltaTime;
+            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            readyToJump = false;
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
+        else if (Input.GetButtonDown("Jump") && canDoubleJump && doubleJumpEnabled)
+        {
+            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            canDoubleJump = false;
         }
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-
-        moveInput = transform.TransformDirection(new Vector3(horizontalInput, 0, verticalInput) * speed);
-        moveDirection = new Vector3(moveInput.x, verticalVelocity, moveInput.z);
-
-        characterController.Move(moveDirection * Time.deltaTime);
-    }
-
-    private void HandleRotation()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * rotationSensitivity;
-        float mouseY = -Input.GetAxis("Mouse Y") * rotationSensitivity;
-
-        transform.Rotate(Vector3.up * mouseX);
-        playerCamera.transform.Rotate(Vector3.right * mouseY);
+        characterController.Move(velocity * Time.deltaTime);
     }
 
     private void ResetJump()
