@@ -41,11 +41,19 @@ public class PlayerController : MonoBehaviour
 
     private CinemachineFreeLook freeLookCam;
 
+    private Transform RespawnTransform;
+
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         freeLookCam = FindObjectOfType<CinemachineFreeLook>();
         readyToJump = true;
+    }
+
+    private void Start()
+    {
+        RespawnTransform = GetComponent<Transform>();
     }
 
     private void Update()
@@ -100,5 +108,19 @@ public class PlayerController : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+    }
+
+    public void Respawn()
+    {
+
+    }
+
+    public void SetRespawn(Transform RespawnTarget)
+    {
+        //if ()
+        //{
+
+        //}
+        RespawnTransform = GetComponent<Transform>();
     }
 }
