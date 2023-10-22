@@ -19,6 +19,7 @@ public class PlayerMovementGravity : MonoBehaviour
     private float coyoteCounter;
     Vector3 OldGravity;
     public float peso = 70;
+    public bool isInOrbit;
 
     void Start()
     {
@@ -87,14 +88,22 @@ public class PlayerMovementGravity : MonoBehaviour
         }
     }
 
-    
 
+    Vector3 GravityDirection;
     private void SetGravity()
     {
-        // Determinar el planeta más cercano y su distancia
+        // Si el jugador está en el suelo, solo sentimos la gravedad de ese planeta específico.
+        if (isGrounded || isInOrbit)
+        {
+            ApplyPlanetGravity(IndexPlanet);
+            return;
+        }
+
+
+
+        // Buscar el planeta más cercano.
         float menorDistancia = float.MaxValue;
         int closestPlanetIndex = -1;
-
         for (int i = 0; i < Planets.Length; i++)
         {
             float distancia = Vector3.Distance(transform.position, Planets[i].transform.position);
@@ -105,63 +114,60 @@ public class PlayerMovementGravity : MonoBehaviour
             }
         }
 
-        IndexPlanet = closestPlanetIndex;
-        Vector3 gravityDirection = (Planets[IndexPlanet].transform.position - transform.position).normalized;
-
-        // Si el objeto NO es esférico, utilizamos raycasts
-        if (Planets[IndexPlanet].GetComponent<SphereCollider>() == null)
+        // Si el planeta más cercano está dentro de un rango específico (por ejemplo, 100f), 
+        // cambiamos la gravedad basada en ese planeta. De lo contrario, gravedad normal.
+        if (menorDistancia <= 5f)
         {
-            Vector3 averageNormal = Vector3.zero;
-            int hitCount = 0;
-
-            // Lanzamos raycasts en varias direcciones
-            Vector3[] rayDirections = {
-            Vector3.forward,
-            Vector3.back,
-            Vector3.left,
-            Vector3.right,
-            Vector3.up,
-            Vector3.down
-        };
-
-            foreach (Vector3 dir in rayDirections)
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, dir, out hit, 100f))
-                {
-                    if (hit.collider.gameObject.CompareTag("Planet"))
-                    {
-                        averageNormal += hit.normal;
-                        hitCount++;
-                    }
-                }
-            }
-
-            if (hitCount > 0)
-            {
-                gravityDirection = -averageNormal / hitCount;
-            }
-        }
-
-        if (!isGrounded){
-
-            float attractionStrength = 2.5f;
-            Vector3 attractionForce = gravityDirection * attractionStrength;
-            //rb.AddForce(attractionForce);
-            Physics.gravity = gravityDirection * 9.81f;
+            IndexPlanet = closestPlanetIndex;
+            ApplyPlanetGravity(IndexPlanet);
         }
         else
         {
-            Physics.gravity = gravityDirection * 9.81f;
+            Physics.gravity = Vector3.down * 9.81f; // Gravedad normal.
         }
-        
-        //float attractionStrength = 2.5f;
-        //Vector3 attractionForce = gravityDirection * attractionStrength;
-        //rb.AddForce(attractionForce);
+    }
 
-        // Asegurarse de que el jugador esté de pie
-        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -gravityDirection) * transform.rotation;
+    private void ApplyPlanetGravity(int planetIndex)
+    {
+        GravityDirection = (Planets[planetIndex].transform.position - transform.position).normalized;
+
+        if (!Planets[planetIndex].GetComponent<PlanetPropierties>().isSpherical)
+        {
+            GravityDirection = CalculateNonSphericalGravityDirection();
+        }
+
+        Physics.gravity = GravityDirection * 9.81f;
+        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -GravityDirection) * transform.rotation;
         transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, RotationSpeed * Time.deltaTime);
+    }
+
+    private Vector3 CalculateNonSphericalGravityDirection()
+    {
+        Vector3 averageNormal = Vector3.zero;
+        int hitCount = 0;
+        Vector3[] rayDirections = {
+        Vector3.forward,
+        Vector3.back,
+        Vector3.left,
+        Vector3.right,
+        Vector3.up,
+        Vector3.down
+    };
+
+        foreach (Vector3 dir in rayDirections)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, dir, out hit, 100f))
+            {
+                if (hit.collider.gameObject.CompareTag("Planet"))
+                {
+                    averageNormal += hit.normal;
+                    hitCount++;
+                }
+            }
+        }
+
+        return hitCount > 0 ? -averageNormal / hitCount : Vector3.down;
     }
 
 
