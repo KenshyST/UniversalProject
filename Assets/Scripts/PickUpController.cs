@@ -18,6 +18,7 @@ public class PickUpController : MonoBehaviour
 
     public bool equipped;
     public static bool slotFull;
+    private bool IsActive = false;
 
     private void Start()
     {
@@ -27,8 +28,9 @@ public class PickUpController : MonoBehaviour
            // gunScript.enabled = false;
             rb.isKinematic = false;
             coll.isTrigger = false;
-            movement.ReleaseObject();
+
             Mira.SetActive(false);
+            movement.ReleaseObject();
         }
         if (equipped)
         {
@@ -36,8 +38,6 @@ public class PickUpController : MonoBehaviour
             rb.isKinematic = true;
             coll.isTrigger = true;
             slotFull = true;
-            movement.GrabObject();
-            Mira.SetActive(true);
         }
     }
 
@@ -50,7 +50,20 @@ public class PickUpController : MonoBehaviour
         //Drop if equipped and "Q" is pressed
         if (equipped && Input.GetKeyDown(KeyCode.Q)) Drop();
 
-        if (equipped && Input.GetKeyDown(KeyCode.Tab)) Throw();
+        if (equipped && Input.GetKeyDown(KeyCode.Mouse1) && !IsActive)
+        {
+            Mira.SetActive(true);
+            movement.GrabObject();
+            IsActive = true;            
+        }
+        else if(equipped && Input.GetKeyDown(KeyCode.Mouse1) && IsActive)
+        {
+            Mira.SetActive(false);
+            movement.ReleaseObject();
+            IsActive = false;
+        }
+
+        if (equipped && Input.GetKeyDown(KeyCode.Mouse0) && IsActive) Throw();
 
     }
 
@@ -58,8 +71,6 @@ public class PickUpController : MonoBehaviour
     {
         equipped = true;
         slotFull = true;
-
-        Mira.SetActive(true);
 
         //Make weapon a child of the camera and move it to default position
         transform.SetParent(gunContainer);
@@ -73,7 +84,6 @@ public class PickUpController : MonoBehaviour
 
         //Enable script
         //gunScript.enabled = true;
-        movement.GrabObject();
     }
 
     private void Drop()
@@ -100,9 +110,11 @@ public class PickUpController : MonoBehaviour
 
         //Disable script
         //gunScript.enabled = false;
-        movement.ReleaseObject();
 
         Mira.SetActive(false);
+        movement.ReleaseObject();
+
+        IsActive = false;
     }
 
     public void Throw()
@@ -136,8 +148,9 @@ public class PickUpController : MonoBehaviour
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 
+        Mira.SetActive(false);
         movement.ReleaseObject();
 
-        Mira.SetActive(false);
+        IsActive = false;
     }
 }
