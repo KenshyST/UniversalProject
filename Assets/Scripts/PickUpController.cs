@@ -5,7 +5,7 @@ using UnityEngine;
 public class PickUpController : MonoBehaviour
 {
     //public ProjectileGun gunScript;
-    public TrialMovement movement;
+    public PlayerController movement;
     public Rigidbody rb;
     public BoxCollider coll;
     public Transform player, gunContainer, fpsCam;
