@@ -20,12 +20,17 @@ public class ButtonControls : MonoBehaviour
     [Tooltip("Añadir el menu Credits")]
     public GameObject creditsMenuUi;
 
+    [Header("Controlador De Menu Settings")]
+    [Tooltip("Añadir el menu Settings")]
+    public GameObject settingsMenuUi;
+
     public void Start()
     {
         buttonAudioSource = GetComponent<AudioSource>();
         mainMenuUI.SetActive(true);
         creditsMenuUi.SetActive(false);
-        
+        settingsMenuUi.SetActive(false);
+
     }
 
     public void Awake()
@@ -33,7 +38,9 @@ public class ButtonControls : MonoBehaviour
         
         mainMenuUI = GameObject.Find("UIMainMenu");
         creditsMenuUi = GameObject.Find("UICredits");
-        
+        settingsMenuUi = GameObject.Find("SettingsUI");
+
+
     }
     public void HoverSound()
     {
@@ -45,14 +52,23 @@ public class ButtonControls : MonoBehaviour
         switch (proximaEscena)
         {
             case 0:
-                
+
                 creditsMenuUi.SetActive(false);
                 mainMenuUI.SetActive(true);
-            break;
-                
+                settingsMenuUi.SetActive(false);
+                break;
+
             case 1:
                 mainMenuUI.SetActive(false);
                 creditsMenuUi.SetActive(true);
+                settingsMenuUi.SetActive(false);
+                break;
+
+            case 2:
+                mainMenuUI.SetActive(false);
+                creditsMenuUi.SetActive(false);
+                settingsMenuUi.SetActive(true);
+
                 break;
 
             default:
@@ -60,5 +76,6 @@ public class ButtonControls : MonoBehaviour
             break;
         }
     }
-    
+
+
 }
