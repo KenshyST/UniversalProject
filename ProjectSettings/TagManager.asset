@@ -4,12 +4,17 @@
 TagManager:
   serializedVersion: 2
   tags:
+<<<<<<< Updated upstream
   - memory
+=======
+  - Planet
+  - Ground
+>>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Planet
   - Water
   - UI
   - 
