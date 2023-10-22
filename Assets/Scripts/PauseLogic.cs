@@ -17,6 +17,7 @@ public class PauseLogic : MonoBehaviour
     private void Awake()
     {
         UIJugador = GameObject.Find("UIJugador");
+
     }
 
     // Update is called once per frame
@@ -31,7 +32,7 @@ public class PauseLogic : MonoBehaviour
         {
             UIPausa.SetActive(true);
             controladorPausa = true;
-            Time.timeScale = 0;
+            Time.timeScale = 1;
             UIJugador.SetActive(false);
         }
         else if (Input.GetButtonDown("Cancel") && controladorPausa)

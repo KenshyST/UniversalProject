@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -583,8 +583,64 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3979983949965008792, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
-      propertyPath: m_Enabled
+    - target: {fileID: 2264336042093334147, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042093334147, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042105224390, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042105224390, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042367782851, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042367782851, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042367782851, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042679695080, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336042679695080, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043243391983, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043243391983, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043243391983, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043413799952, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043413799952, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2264336043413799952, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3979983949965008798, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
@@ -635,17 +691,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Jugador
       objectReference: {fileID: 0}
-    - target: {fileID: 3979983949965008807, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3979983950054655159, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -1.0073639e-15
+      value: 1.0073641e-15
       objectReference: {fileID: 0}
     - target: {fileID: 3979983950054655159, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1.9243882e-16
+      value: -1.9243884e-16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1e60bf72af064f41a779cb802d5c09a, type: 3}
