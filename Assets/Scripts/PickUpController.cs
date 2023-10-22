@@ -5,13 +5,16 @@ using UnityEngine;
 public class PickUpController : MonoBehaviour
 {
     //public ProjectileGun gunScript;
-    //public PlayerController movement;
+    public PlayerMovementGravity movement;
     public Rigidbody rb;
     public BoxCollider coll;
     public Transform player, gunContainer, fpsCam;
+    public GameObject Mira;
 
     public float pickUpRange;
     public float dropForwardForce, dropUpwardForce;
+    public float trowForwardForce, trowUpwardForce;
+
 
     public bool equipped;
     public static bool slotFull;
@@ -24,7 +27,8 @@ public class PickUpController : MonoBehaviour
            // gunScript.enabled = false;
             rb.isKinematic = false;
             coll.isTrigger = false;
-           // movement.ReleaseObject();
+            movement.ReleaseObject();
+            Mira.SetActive(false);
         }
         if (equipped)
         {
@@ -32,7 +36,8 @@ public class PickUpController : MonoBehaviour
             rb.isKinematic = true;
             coll.isTrigger = true;
             slotFull = true;
-           // movement.GrabObject();
+            movement.GrabObject();
+            Mira.SetActive(true);
         }
     }
 
@@ -44,12 +49,17 @@ public class PickUpController : MonoBehaviour
 
         //Drop if equipped and "Q" is pressed
         if (equipped && Input.GetKeyDown(KeyCode.Q)) Drop();
+
+        if (equipped && Input.GetKeyDown(KeyCode.Tab)) Throw();
+
     }
 
     private void PickUp()
     {
         equipped = true;
         slotFull = true;
+
+        Mira.SetActive(true);
 
         //Make weapon a child of the camera and move it to default position
         transform.SetParent(gunContainer);
@@ -63,7 +73,7 @@ public class PickUpController : MonoBehaviour
 
         //Enable script
         //gunScript.enabled = true;
-      //  movement.GrabObject();
+        movement.GrabObject();
     }
 
     private void Drop()
@@ -90,6 +100,44 @@ public class PickUpController : MonoBehaviour
 
         //Disable script
         //gunScript.enabled = false;
-       // movement.ReleaseObject();
+        movement.ReleaseObject();
+
+        Mira.SetActive(false);
+    }
+
+    public void Throw()
+    {
+        equipped = false;
+        slotFull = false;
+
+        // Desvincula el objeto de la
+        // mano del jugador
+        transform.SetParent(null);
+
+        //Make Rigidbody not kinematic and BoxCollider normal
+        rb.isKinematic = false;
+        coll.isTrigger = false;
+
+        // get rigidbody component del objeto en la mano
+        Rigidbody projectileRb = gameObject.GetComponent<Rigidbody>();
+
+        // calculate direction
+        Vector3 forceDirection = fpsCam.transform.forward;
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(fpsCam.position, fpsCam.forward, out hit, 500f))
+        {
+            forceDirection = (hit.point - gunContainer.position).normalized;
+        }
+
+        // add force
+        Vector3 forceToAdd = forceDirection * trowForwardForce + transform.up * trowUpwardForce;
+
+        projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
+
+        movement.ReleaseObject();
+
+        Mira.SetActive(false);
     }
 }
