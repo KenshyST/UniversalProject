@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 120801643611494745}
   - component: {fileID: 120801643611494744}
   m_Layer: 0
-  m_Name: er
+  m_Name: Ojos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
