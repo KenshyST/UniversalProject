@@ -92,18 +92,17 @@ public class PlayerMovementGravity : MonoBehaviour
     Vector3 GravityDirection;
     private void SetGravity()
     {
-        // Si el jugador está en el suelo, solo sentimos la gravedad de ese planeta específico.
-        if (isGrounded || isInOrbit)
+        // Si el jugador está en el suelo, no es necesario calcular la gravedad de otros planetas
+        if (isGrounded)
         {
-            ApplyPlanetGravity(IndexPlanet);
+            Physics.gravity = GravityDirection * 9.81f;
             return;
         }
 
-
-
-        // Buscar el planeta más cercano.
+        // Determinar el planeta más cercano y su distancia
         float menorDistancia = float.MaxValue;
         int closestPlanetIndex = -1;
+
         for (int i = 0; i < Planets.Length; i++)
         {
             float distancia = Vector3.Distance(transform.position, Planets[i].transform.position);
@@ -114,63 +113,51 @@ public class PlayerMovementGravity : MonoBehaviour
             }
         }
 
-        // Si el planeta más cercano está dentro de un rango específico (por ejemplo, 100f), 
-        // cambiamos la gravedad basada en ese planeta. De lo contrario, gravedad normal.
-        if (menorDistancia <= 5f)
+        // Si el jugador no está en la órbita de un planeta, usar gravedad hacia abajo
+        if (closestPlanetIndex == -1 || !isInOrbit)
         {
-            IndexPlanet = closestPlanetIndex;
-            ApplyPlanetGravity(IndexPlanet);
-        }
-        else
-        {
-            Physics.gravity = Vector3.down * 9.81f; // Gravedad normal.
-        }
-    }
-
-    private void ApplyPlanetGravity(int planetIndex)
-    {
-        GravityDirection = (Planets[planetIndex].transform.position - transform.position).normalized;
-
-        if (!Planets[planetIndex].GetComponent<PlanetPropierties>().isSpherical)
-        {
-            GravityDirection = CalculateNonSphericalGravityDirection();
+            GravityDirection = Vector3.down;
+            Physics.gravity = GravityDirection * 9.81f;
+            return;
         }
 
-        Physics.gravity = GravityDirection * 9.81f;
-        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -GravityDirection) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, RotationSpeed * Time.deltaTime);
-    }
+        IndexPlanet = closestPlanetIndex;
+        GravityDirection = (Planets[IndexPlanet].transform.position - transform.position).normalized;
 
-    private Vector3 CalculateNonSphericalGravityDirection()
-    {
-        Vector3 averageNormal = Vector3.zero;
-        int hitCount = 0;
-        Vector3[] rayDirections = {
-        Vector3.forward,
-        Vector3.back,
-        Vector3.left,
-        Vector3.right,
-        Vector3.up,
-        Vector3.down
-    };
-
-        foreach (Vector3 dir in rayDirections)
+        // Si el objeto NO es esférico, utilizamos raycasting sofisticado
+        if (!Planets[IndexPlanet].GetComponent<PlanetPropierties>().isSpherical)
         {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, dir, out hit, 100f))
+            int numberOfRays = 100;
+            Vector3 averageNormal = Vector3.zero;
+            int hitCount = 0;
+
+            for (int i = 0; i < numberOfRays; i++)
             {
-                if (hit.collider.gameObject.CompareTag("Planet"))
+                Vector3 dir = Random.onUnitSphere;
+
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position, dir, out hit, 100f))
                 {
-                    averageNormal += hit.normal;
-                    hitCount++;
+                    if (hit.collider.gameObject.CompareTag("Planet"))
+                    {
+                        averageNormal += hit.normal;
+                        hitCount++;
+                    }
                 }
+            }
+
+            if (hitCount > 0)
+            {
+                GravityDirection = -averageNormal / hitCount;
             }
         }
 
-        return hitCount > 0 ? -averageNormal / hitCount : Vector3.down;
+        Physics.gravity = GravityDirection * 9.81f;
+
+        // Asegurarse de que el jugador esté de pie
+        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -GravityDirection) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, RotationSpeed * Time.deltaTime);
     }
-
-
 
     private void OnCollisionEnter(Collision collision)
     {
