@@ -8,7 +8,7 @@ public class CameraFollowPlayer : MonoBehaviour
     public float xSpeed = 3.5f;
     float sensitivity = 17f;
     Camera Cam;
-
+    public ArmaRayos armaRayos;
 
     float minFov = 35;
     float maxFov = 100;
@@ -26,7 +26,11 @@ public class CameraFollowPlayer : MonoBehaviour
         //ZOOM
 
         float fov = Cam.fieldOfView;
-        fov += Input.GetAxis("Mouse ScrollWheel") * -sensitivity;
+        if (!armaRayos.isGrabbing)
+        {
+            fov += Input.GetAxis("Mouse ScrollWheel") * -sensitivity;
+        }
+        
         fov = Mathf.Clamp(fov, minFov, maxFov);
         Cam.fieldOfView = fov;
     }
