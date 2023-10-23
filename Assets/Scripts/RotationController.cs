@@ -20,4 +20,22 @@ public class RotationController : MonoBehaviour
 
         transform.Rotate(rotationX, rotationY, rotationZ);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            other.transform.SetParent(transform, true);
+            //this.gameObject. ther
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            other.transform.SetParent(null, true);
+            //this.gameObject. ther
+        }
+    }
 }

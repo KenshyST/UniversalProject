@@ -8,6 +8,7 @@ TagManager:
   - Ground
   - memory
   - PlanetOrbit
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

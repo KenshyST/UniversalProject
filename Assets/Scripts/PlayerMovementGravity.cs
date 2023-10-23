@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerMovementGravity : MonoBehaviour
 {
     private GameObject[] Planets;
+    public int VidasPlayer;
     public int IndexPlanet; // Planeta mas cercano
     public float MovingSpeed;
     public float RunningSpeed;
@@ -25,10 +26,14 @@ public class PlayerMovementGravity : MonoBehaviour
     public Camera playerCamera; // Añadido para la lógica de movimiento con cámara
     public GameObject Freelook;
     public bool isGrabbed = false; // Determina si el jugador ha agarrado un objeto
+    private Vector3 lastSafePosition;
 
     void Start()
     {
+        VidasPlayer = 3;
+        GameObject.Find("GameManager").GetComponent<ScoreLogic>().UpdateLifesUI();
         originalRotation = transform.eulerAngles;
+        lastSafePosition = transform.position;
         OldGravity = Physics.gravity;
         IndexPlanet = 0;
         rb = GetComponent<Rigidbody>();
@@ -137,8 +142,8 @@ public class PlayerMovementGravity : MonoBehaviour
             Vector3 currentEuler = transform.eulerAngles;
 
             // Interpola solo en los ejes X y Z
-            currentEuler.x = Mathf.LerpAngle(currentEuler.x, originalRotation.x, RotationSpeed * Time.deltaTime);
-            currentEuler.z = Mathf.LerpAngle(currentEuler.z, originalRotation.z, RotationSpeed * Time.deltaTime);
+            currentEuler.x = Mathf.LerpAngle(currentEuler.x, originalRotation.x, 0.5f * Time.deltaTime);
+            currentEuler.z = Mathf.LerpAngle(currentEuler.z, originalRotation.z, 0.5f * Time.deltaTime);
 
             // Aplica la nueva rotación
             transform.eulerAngles = currentEuler;
@@ -238,5 +243,32 @@ public class PlayerMovementGravity : MonoBehaviour
         Freelook.SetActive(false);
         playerCamera.transform.localPosition = new Vector3(-0.12f, 2.238f, -4.197f);
         playerCamera.transform.localRotation = Quaternion.Euler(21.194f, 0, 0);
+
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Respawn"))
+        {
+            Respawn();
+        }
+        else if (other.CompareTag("Checkpoint"))
+        {
+            Destroy(other.gameObject);
+            UpdateLastSafePosition();
+        }
+    }
+
+
+    private void Respawn()
+    {
+        VidasPlayer--;
+        transform.position = lastSafePosition;
+        GameObject.Find("GameManager").GetComponent<ScoreLogic>().UpdateLifesUI();
+        // Aquí puedes añadir cualquier otra acción que quieras que suceda al respawneo. Por ejemplo, resetear la salud del jugador.
+    }
+
+    private void UpdateLastSafePosition()
+    {
+        lastSafePosition = transform.position;
     }
 }
