@@ -107,4 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9743e4aea57eed43a41319520296528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPressed: 0
+  isHold: 1
   pressDistance: 0.1
