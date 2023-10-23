@@ -12,6 +12,8 @@ public class GateMovement : MonoBehaviour
     private Vector3 openPosition; // Posición final cuando la puerta está abierta
     private Vector3 closedPosition; // Posición inicial de la puerta
 
+    [SerializeField] Button ButtonToOpen;
+
     void Start()
     {
         // Establece las posiciones de apertura y cierre basadas en la posición inicial de la puerta
@@ -21,6 +23,7 @@ public class GateMovement : MonoBehaviour
 
     void Update()
     {
+        isOpening = ButtonToOpen.isPressed;
         if (isOpening)
         {
             // Si la puerta se está abriendo, muévela hacia la posición de apertura

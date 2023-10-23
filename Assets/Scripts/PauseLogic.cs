@@ -65,7 +65,7 @@ public class PauseLogic : MonoBehaviour
 
     public void GameOver()
     {
-        Mensaje.text = "Gems: "+ Player.ScorePlayer + " \nRemaining lifes: " + Player.VidasPlayer;
+        Mensaje.text = "Gems: "+ Player.ScorePlayer+"/"+ GameObject.FindGameObjectsWithTag("Gems").Length + " \nRemaining lifes: " + Player.VidasPlayer;
         UIPausa.SetActive(false);
         UIJugador.SetActive(false);
         UIGameOver.SetActive(true);

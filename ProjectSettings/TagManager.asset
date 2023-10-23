@@ -9,6 +9,7 @@ TagManager:
   - memory
   - PlanetOrbit
   - Checkpoint
+  - Gems
   layers:
   - Default
   - TransparentFX
