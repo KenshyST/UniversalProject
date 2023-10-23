@@ -9,6 +9,10 @@ public class ScoreLogic : MonoBehaviour
 {
     public int playerScore;
     [SerializeField] private TextMeshProUGUI UITexto;
+    public int  PlayerLifes;
+    [SerializeField] private TextMeshProUGUI UILife;
+
+    [SerializeField] private PlayerMovementGravity Player;
 
 
     [SerializeField] private GameObject BackgroundHistory;
@@ -16,12 +20,18 @@ public class ScoreLogic : MonoBehaviour
 
     private void Start()
     {
+        
         UITexto = GameObject.Find("ScoreUI").GetComponent<TextMeshProUGUI>();
     }
 
     public void UpdateScoreUI()
     {
         UITexto.text = "Crystals: " + playerScore;
+    }
+    public void UpdateLifesUI()
+    {
+        PlayerLifes = Player.VidasPlayer;
+        UILife.text = "Lifes " + PlayerLifes;
     }
 
     public void IncreaseScore()

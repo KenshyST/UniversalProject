@@ -4,9 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - memory
   - Planet
-  - agarrable
+  - Ground
+  - memory
+  - PlanetOrbit
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

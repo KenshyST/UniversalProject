@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovementGravity : MonoBehaviour
+public class NewPlayerCOntroller : MonoBehaviour
 {
+    // Variables existentes
     private GameObject[] Planets;
-    public int VidasPlayer;
-    public int IndexPlanet; // Planeta mas cercano
+    public int IndexPlanet;
     public float MovingSpeed;
     public float RunningSpeed;
     public float RotationSpeed;
@@ -15,25 +15,21 @@ public class PlayerMovementGravity : MonoBehaviour
     public float JumpForce;
     public bool isGrounded;
     private bool canDoubleJump;
-    public bool allowDoubleJump = true; // Activa o desactiva el doble salto.
-    public float coyoteTime = 0.2f; // Tiempo que puede saltar después de dejar el suelo.
+    public bool allowDoubleJump = true;
+    public float coyoteTime = 0.2f;
     private float coyoteCounter;
     Vector3 OldGravity;
     public float peso = 70;
-    public bool isInOrbit;
-    Vector3 originalRotation;
-
     public Camera playerCamera; // Añadido para la lógica de movimiento con cámara
     public GameObject Freelook;
+
+    public float walkSpeed = 5f;
+    public float runSpeed = 10f;
+
     public bool isGrabbed = false; // Determina si el jugador ha agarrado un objeto
-    private Vector3 lastSafePosition;
 
     void Start()
     {
-        VidasPlayer = 3;
-        GameObject.Find("GameManager").GetComponent<ScoreLogic>().UpdateLifesUI();
-        originalRotation = transform.eulerAngles;
-        lastSafePosition = transform.position;
         OldGravity = Physics.gravity;
         IndexPlanet = 0;
         rb = GetComponent<Rigidbody>();
@@ -46,7 +42,7 @@ public class PlayerMovementGravity : MonoBehaviour
         Planets = GameObject.FindGameObjectsWithTag("Planet");
         SetGravity();
         if (isGrabbed)
-        {
+        {           
             OrientPlayerToCamera();
             MoveWithCameraDirection();
         }
@@ -108,16 +104,9 @@ public class PlayerMovementGravity : MonoBehaviour
     }
 
 
-    Vector3 GravityDirection;
+
     private void SetGravity()
     {
-        // Si el jugador está en el suelo, no es necesario calcular la gravedad de otros planetas
-        if (isGrounded)
-        {
-            Physics.gravity = GravityDirection * 9.81f;
-            return;
-        }
-
         // Determinar el planeta más cercano y su distancia
         float menorDistancia = float.MaxValue;
         int closestPlanetIndex = -1;
@@ -132,39 +121,27 @@ public class PlayerMovementGravity : MonoBehaviour
             }
         }
 
-        // Si el jugador no está en la órbita de un planeta, usar gravedad hacia abajo
-        if (closestPlanetIndex == -1 || !isInOrbit)
-        {
-            GravityDirection = Vector3.down;
-            Physics.gravity = GravityDirection * 9.81f;
-
-            // Obtiene la rotación actual en ángulos de Euler
-            Vector3 currentEuler = transform.eulerAngles;
-
-            // Interpola solo en los ejes X y Z
-            currentEuler.x = Mathf.LerpAngle(currentEuler.x, originalRotation.x, 0.5f * Time.deltaTime);
-            currentEuler.z = Mathf.LerpAngle(currentEuler.z, originalRotation.z, 0.5f * Time.deltaTime);
-
-            // Aplica la nueva rotación
-            transform.eulerAngles = currentEuler;
-
-            return;
-        }
-
         IndexPlanet = closestPlanetIndex;
-        GravityDirection = (Planets[IndexPlanet].transform.position - transform.position).normalized;
+        Vector3 gravityDirection = (Planets[IndexPlanet].transform.position - transform.position).normalized;
 
-        // Si el objeto NO es esférico, utilizamos raycasting sofisticado
-        if (!Planets[IndexPlanet].GetComponent<PlanetPropierties>().isSpherical)
+        // Si el objeto NO es esférico, utilizamos raycasts
+        if (Planets[IndexPlanet].GetComponent<SphereCollider>() == null)
         {
-            int numberOfRays = 100;
             Vector3 averageNormal = Vector3.zero;
             int hitCount = 0;
 
-            for (int i = 0; i < numberOfRays; i++)
-            {
-                Vector3 dir = Random.onUnitSphere;
+            // Lanzamos raycasts en varias direcciones
+            Vector3[] rayDirections = {
+            Vector3.forward,
+            Vector3.back,
+            Vector3.left,
+            Vector3.right,
+            Vector3.up,
+            Vector3.down
+        };
 
+            foreach (Vector3 dir in rayDirections)
+            {
                 RaycastHit hit;
                 if (Physics.Raycast(transform.position, dir, out hit, 100f))
                 {
@@ -178,16 +155,33 @@ public class PlayerMovementGravity : MonoBehaviour
 
             if (hitCount > 0)
             {
-                GravityDirection = -averageNormal / hitCount;
+                gravityDirection = -averageNormal / hitCount;
             }
         }
 
-        Physics.gravity = GravityDirection * 11F;
+        if (!isGrounded)
+        {
+
+            float attractionStrength = 2.5f;
+            Vector3 attractionForce = gravityDirection * attractionStrength;
+            //rb.AddForce(attractionForce);
+            Physics.gravity = gravityDirection * 9.81f;
+        }
+        else
+        {
+            Physics.gravity = gravityDirection * 9.81f;
+        }
+
+        //float attractionStrength = 2.5f;
+        //Vector3 attractionForce = gravityDirection * attractionStrength;
+        //rb.AddForce(attractionForce);
 
         // Asegurarse de que el jugador esté de pie
-        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -GravityDirection) * transform.rotation;
+        Quaternion toRotation = Quaternion.FromToRotation(transform.up, -gravityDirection) * transform.rotation;
         transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, RotationSpeed * Time.deltaTime);
     }
+
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -224,7 +218,7 @@ public class PlayerMovementGravity : MonoBehaviour
         direction.y = 0; // Mantenemos la componente y en 0 para no moverse hacia arriba o abajo.
         direction.Normalize(); // Normalizamos la dirección para que tenga una magnitud de 1.
 
-        float speed = Input.GetButton("Sprint") ? RunningSpeed : MovingSpeed;
+        float speed = Input.GetButton("Sprint") ? runSpeed : walkSpeed;
 
         // Movemos al jugador en la dirección calculada.
         rb.velocity = new Vector3(direction.x * speed, rb.velocity.y, direction.z * speed);
@@ -243,32 +237,5 @@ public class PlayerMovementGravity : MonoBehaviour
         Freelook.SetActive(false);
         playerCamera.transform.localPosition = new Vector3(-0.12f, 2.238f, -4.197f);
         playerCamera.transform.localRotation = Quaternion.Euler(21.194f, 0, 0);
-
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Respawn"))
-        {
-            Respawn();
-        }
-        else if (other.CompareTag("Checkpoint"))
-        {
-            Destroy(other.gameObject);
-            UpdateLastSafePosition();
-        }
-    }
-
-
-    private void Respawn()
-    {
-        VidasPlayer--;
-        transform.position = lastSafePosition;
-        GameObject.Find("GameManager").GetComponent<ScoreLogic>().UpdateLifesUI();
-        // Aquí puedes añadir cualquier otra acción que quieras que suceda al respawneo. Por ejemplo, resetear la salud del jugador.
-    }
-
-    private void UpdateLastSafePosition()
-    {
-        lastSafePosition = transform.position;
     }
 }
