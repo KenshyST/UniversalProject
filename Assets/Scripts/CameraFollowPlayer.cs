@@ -26,6 +26,7 @@ public class CameraFollowPlayer : MonoBehaviour
         //ZOOM
 
         float fov = Cam.fieldOfView;
+        fov += Input.GetAxis("Mouse ScrollWheel") * -sensitivity;
         fov = Mathf.Clamp(fov, minFov, maxFov);
         Cam.fieldOfView = fov;
     }

@@ -8,24 +8,23 @@ using UnityEngine.UI;
 public class ScoreLogic : MonoBehaviour
 {
     public int playerScore;
-    [SerializeField] private TextMeshProUGUI UITexto;
-    public int  PlayerLifes;
-    [SerializeField] private TextMeshProUGUI UILife;
-
+    public int PlayerLifes;
     [SerializeField] private PlayerMovementGravity Player;
-
-
-    [SerializeField] private GameObject BackgroundHistory;
+    [SerializeField] private TextMeshProUGUI UITexto;
+    [SerializeField] private TextMeshProUGUI UILife;
     [SerializeField] private TextMeshProUGUI historyText;
+    [SerializeField] private GameObject BackgroundHistory;
 
     private void Start()
     {
         
         UITexto = GameObject.Find("ScoreUI").GetComponent<TextMeshProUGUI>();
+        UpdateLifesUI();
     }
 
     public void UpdateScoreUI()
     {
+        Player.ScorePlayer = playerScore;
         UITexto.text = "Crystals: " + playerScore;
     }
     public void UpdateLifesUI()
@@ -62,6 +61,5 @@ public class ScoreLogic : MonoBehaviour
         BackgroundHistory.SetActive(false);
         historyText.text = "";
     }
-
 
 }

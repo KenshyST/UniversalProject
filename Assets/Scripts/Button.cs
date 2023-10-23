@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Button : MonoBehaviour
 {
-    private bool isPressed = false; // Para saber si el botón está presionado
+    public bool isPressed = false; // Para saber si el botón está presionado
+    public bool isHold = false; // Para saber si el botón está presionado
 
     private Vector3 initialPosition; // Posición inicial del botón
     public float pressDistance = 0.1f; // Distancia que se moverá el botón cuando sea presionado
@@ -26,7 +27,7 @@ public class Button : MonoBehaviour
     {
         if (other.CompareTag("Player") && isPressed)
         {
-            ReleaseButton();
+            if (!isHold) { ReleaseButton(); }
         }
     }
 
