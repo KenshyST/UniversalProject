@@ -3697,9 +3697,8 @@ GameObject:
   - component: {fileID: 746782406}
   - component: {fileID: 746782408}
   - component: {fileID: 746782407}
-  - component: {fileID: 746782410}
-  - component: {fileID: 746782411}
   - component: {fileID: 746782412}
+  - component: {fileID: 746782413}
   m_Layer: 5
   m_Name: NewGameButton
   m_TagString: Untagged
@@ -3771,7 +3770,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 746782402}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 746782413}
+        m_TargetAssemblyTypeName: CambiarEscena, Assembly-CSharp
+        m_MethodName: Cambiar
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &746782402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3976,7 +3987,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 746782411}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: CambiarEscena, Assembly-CSharp
           m_MethodName: Cambiar
           m_Mode: 3
@@ -3988,30 +3999,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &746782410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 746782399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85bf59d94c03b7b47acf00bf9758edfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &746782411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 746782399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f8cf5b84cd715543a531868d7687150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &746782412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4027,6 +4014,19 @@ MonoBehaviour:
   isPressed: 0
   isHold: 0
   pressDistance: 0.1
+--- !u!114 &746782413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 746782399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc2b5b8689f2cb04c9a78cb870ee4956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  escenas: 0
 --- !u!1 &784405576
 GameObject:
   m_ObjectHideFlags: 0
