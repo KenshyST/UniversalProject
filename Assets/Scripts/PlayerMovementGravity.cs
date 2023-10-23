@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class PlayerMovementGravity : MonoBehaviour
 {
@@ -32,7 +29,6 @@ public class PlayerMovementGravity : MonoBehaviour
     public bool isGrabbed = false; // Determina si el jugador ha agarrado un objeto
     private Vector3 lastSafePosition;
 
-    public Animator characterAnimController;
     void Start()
     {
         VidasPlayer = 3;
@@ -65,45 +61,26 @@ public class PlayerMovementGravity : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 moveDirection = new Vector3(horizontal, 0, vertical).normalized;
+
         float actualSpeed = 0.0f;
-        if (moveDirection != Vector3.zero)
-        {
-            characterAnimController.SetBool("walking", !isRunning);
-            characterAnimController.SetBool("running", isRunning);
-            characterAnimController.SetBool("jumping", false);
-            characterAnimController.SetBool("falling", false);
-            transform.Translate(moveDirection * actualSpeed * Time.deltaTime);
-        }
-        else
-        {
-            characterAnimController.SetBool("walking", false);
-            characterAnimController.SetBool("running", false);
-        }
+
         // Running
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            
             isRunning = true;
             actualSpeed = RunningSpeed;
         }
         else
         {
-              
-                isRunning = false;
+            isRunning = false;
             actualSpeed = MovingSpeed;
         }
-          
+
         if (vertical >= 0.2) { transform.Translate(new Vector3(0, 0, actualSpeed * Time.deltaTime)); }
         if (vertical <= -0.2) { transform.Translate(new Vector3(0, 0, -actualSpeed * Time.deltaTime)); }
         if (horizontal <= -0.2) { transform.Rotate(new Vector3(0, -RotationSpeed * Time.deltaTime, 0)); }
         if (horizontal >= 0.2) { transform.Rotate(new Vector3(0, RotationSpeed * Time.deltaTime, 0)); }
 
-       
-
-
-       
-    
         // Jumping and Double Jumping
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -112,24 +89,14 @@ public class PlayerMovementGravity : MonoBehaviour
                 rb.AddForce(transform.up * JumpForce);
                 isGrounded = false;
                 coyoteCounter = 0;
-
-                characterAnimController.SetBool("jumping", true);
-                characterAnimController.SetBool("walking", false);
-                characterAnimController.SetBool("running", false);
-                StartCoroutine(SetFalling()); // Llamar al IEnumerator
                 if (allowDoubleJump)
                 {
                     canDoubleJump = true;
-
                 }
             }
             else if (canDoubleJump)
             {
-                characterAnimController.SetBool("jumping", true);
-                characterAnimController.SetBool("walking", false);
-                characterAnimController.SetBool("running", false);
                 rb.AddForce(transform.up * JumpForce);
-                StartCoroutine(SetFalling());
                 canDoubleJump = false;
             }
         }
@@ -138,10 +105,6 @@ public class PlayerMovementGravity : MonoBehaviour
         if (!isGrounded)
         {
             coyoteCounter -= Time.deltaTime;
-            characterAnimController.SetBool("walking", false);
-            characterAnimController.SetBool("running", false);
-            characterAnimController.SetBool("jumping", false);
-            characterAnimController.SetBool("falling", true);
         }
     }
 
@@ -152,10 +115,6 @@ public class PlayerMovementGravity : MonoBehaviour
         // Si el jugador está en el suelo, no es necesario calcular la gravedad de otros planetas
         if (isGrounded)
         {
-            characterAnimController.SetBool("walking", false);
-            characterAnimController.SetBool("running", false);
-            characterAnimController.SetBool("jumping", false);
-            characterAnimController.SetBool("falling", false);
             Physics.gravity = GravityDirection * 9.81f;
             return;
         }
@@ -236,7 +195,6 @@ public class PlayerMovementGravity : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Planet"))
         {
             isGrounded = true;
-
             canDoubleJump = false;
             coyoteCounter = coyoteTime;
         }
@@ -314,14 +272,4 @@ public class PlayerMovementGravity : MonoBehaviour
     {
         lastSafePosition = transform.position;
     }
-    IEnumerator SetFalling()
-    {
-        yield return new WaitForSeconds(0.5f);
-        characterAnimController.SetBool("walking", false);
-        characterAnimController.SetBool("running", false);
-        characterAnimController.SetBool("jumping", false);
-        characterAnimController.SetBool("falling", true);
-        
-    }
-
 }
