@@ -6,6 +6,7 @@ public class PlayerMovementGravity : MonoBehaviour
 {
     private GameObject[] Planets;
     public int VidasPlayer;
+    public int ScorePlayer;
     public int IndexPlanet; // Planeta mas cercano
     public float MovingSpeed;
     public float RunningSpeed;

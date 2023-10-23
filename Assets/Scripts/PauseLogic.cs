@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PauseLogic : MonoBehaviour
 {
@@ -8,10 +11,17 @@ public class PauseLogic : MonoBehaviour
 
     [SerializeField] private GameObject UIJugador;
 
+    [SerializeField] private GameObject UIGameOver;
+    [SerializeField] TextMeshProUGUI Mensaje;
+
+    PlayerMovementGravity Player;
+
+
+
     [SerializeField] private bool controladorPausa;
     void Start()
     {
-        
+        Player = GetComponent<PlayerMovementGravity>();    
     }
 
     private void Awake()
@@ -51,5 +61,28 @@ public class PauseLogic : MonoBehaviour
         UIJugador.SetActive(true);
         controladorPausa = false;
         Time.timeScale = 1;
+    }
+
+    public void GameOver()
+    {
+        Mensaje.text = "Gems: "+ Player.ScorePlayer + " \nRemaining lifes: " + Player.VidasPlayer;
+        UIPausa.SetActive(false);
+        UIJugador.SetActive(false);
+        UIGameOver.SetActive(true);
+    }
+
+    public void ResetLevel()
+    {
+        // Carga una escena por nombre:
+        SceneManager.LoadScene(1);
+
+        // O carga una escena por índice:
+        //SceneManager.LoadScene(1);
+
+    }
+
+    public void QuitLecel()
+    {
+        SceneManager.LoadScene(0);
     }
 }
