@@ -20,9 +20,11 @@ public class PlayerMovementGravity : MonoBehaviour
     Vector3 OldGravity;
     public float peso = 70;
     public bool isInOrbit;
+    Vector3 originalRotation;
 
     void Start()
     {
+        originalRotation = transform.eulerAngles;
         OldGravity = Physics.gravity;
         IndexPlanet = 0;
         rb = GetComponent<Rigidbody>();
@@ -118,6 +120,17 @@ public class PlayerMovementGravity : MonoBehaviour
         {
             GravityDirection = Vector3.down;
             Physics.gravity = GravityDirection * 9.81f;
+
+            // Obtiene la rotación actual en ángulos de Euler
+            Vector3 currentEuler = transform.eulerAngles;
+
+            // Interpola solo en los ejes X y Z
+            currentEuler.x = Mathf.LerpAngle(currentEuler.x, originalRotation.x, RotationSpeed * Time.deltaTime);
+            currentEuler.z = Mathf.LerpAngle(currentEuler.z, originalRotation.z, RotationSpeed * Time.deltaTime);
+
+            // Aplica la nueva rotación
+            transform.eulerAngles = currentEuler;
+
             return;
         }
 
@@ -152,7 +165,7 @@ public class PlayerMovementGravity : MonoBehaviour
             }
         }
 
-        Physics.gravity = GravityDirection * 9.81f;
+        Physics.gravity = GravityDirection * 11F;
 
         // Asegurarse de que el jugador esté de pie
         Quaternion toRotation = Quaternion.FromToRotation(transform.up, -GravityDirection) * transform.rotation;
